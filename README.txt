@@ -1,0 +1,1 @@
+Cô vào App.config để đổi connectionString ạ :D
