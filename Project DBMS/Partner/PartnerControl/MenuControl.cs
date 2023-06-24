@@ -16,32 +16,27 @@ namespace Project_DBMS.Partner.PartnerControl
 {
     public partial class MenuControl : UserControl
     {
-        String connectionString = "";
+        //String connectionString = "";
         string madoitac = "";
         bool version;
 
         public MenuControl()
         {
             InitializeComponent();
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
+            //connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
         }
 
         public MenuControl(string partnerID)
         {
             InitializeComponent();
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
-
+            //connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
             madoitac = partnerID;
         }
 
         public MenuControl(string partnerID, bool ver)
         {
             InitializeComponent();
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
-
+            //connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
             madoitac = partnerID;
             version = ver;
         }
@@ -117,12 +112,20 @@ namespace Project_DBMS.Partner.PartnerControl
             using var dbcontext = new DbmsqlBanHangContext();
             String branchID = CN_cbb.SelectedValue.ToString();
 
-            var sqlQuery = from dish in dbcontext.Monans
-                           where dish.Machinhanhs.All(value => value.Machinhanh == branchID)
-                           select dish;
-            
-            DSTDGrid.AutoGenerateColumns = false;
-            DSTDGrid.DataSource = sqlQuery.ToList();
+            var branchs = (from branch in dbcontext.Chinhanhs 
+                           where branch.Machinhanh == branchID
+                           select branch).FirstOrDefault();
+                    
+            var entity_entry = dbcontext.Entry(branchs);
+            entity_entry.Collection(branch => branch.Tenmonans).Load();
+
+            if (branchs.Tenmonans == null) {
+                MessageBox.Show("This branch haven't got any dish yet!!!");
+            }
+            else {
+                DSTDGrid.AutoGenerateColumns = false;
+                DSTDGrid.DataSource = branchs.Tenmonans.ToList();
+            }
         }
 
         private void DSTDGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -195,8 +198,10 @@ namespace Project_DBMS.Partner.PartnerControl
                         new SqlParameter("@dishname", dishName)
                     );
 
-                    if (result != 0)
+                    if (result != 0) {
                         MessageBox.Show("Delete Successfully!!!");
+                        dbcontext.SaveChanges();
+                    }
                     else 
                         MessageBox.Show("Delete Fail!!!");
                 }
@@ -267,8 +272,10 @@ namespace Project_DBMS.Partner.PartnerControl
                 new SqlParameter("@dishname", dishName)
             );
 
-            if (result != 0)
+            if (result != 0) {
                 MessageBox.Show("Add Successfully!!!");
+                dbcontext.SaveChanges();
+            }
             else 
                 MessageBox.Show("Add Fail!!!");
         }
