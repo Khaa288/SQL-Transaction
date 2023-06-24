@@ -8,13 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using Project_DBMS.Models;
 
 namespace Project_DBMS.Partner.PartnerControl
 {
     public partial class BranchControl : UserControl
     {
         String madoitac;
-        String connectionString = "";
         bool version;
 
         public BranchControl()
@@ -25,36 +25,37 @@ namespace Project_DBMS.Partner.PartnerControl
         public BranchControl(String partnerID)
         {
             InitializeComponent();
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
-
             madoitac = partnerID;
         }
 
         public BranchControl(String partnerID, bool ver)
         {
             InitializeComponent();
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
-
             madoitac = partnerID;
             version = ver;
         }
 
         private void DS_CN_Button_Click(object sender, EventArgs e)
         {
-            SqlConnection connection = new SqlConnection(connectionString);
-            connection.Open();
+            //SqlConnection connection = new SqlConnection(connectionString);
+            //connection.Open();
 
-            String sqlQuery = String.Format("SELECT * FROM CHINHANH WHERE MADOITAC = '{0}'", madoitac);
+            //String sqlQuery = String.Format("SELECT * FROM CHINHANH WHERE MADOITAC = '{0}'", madoitac);
+            //SqlDataAdapter adapter = new SqlDataAdapter(sqlQuery, connection);
 
-            SqlDataAdapter adapter = new SqlDataAdapter(sqlQuery, connection);
+            //DataTable table = new DataTable();
+            //SQLQuery.ToList().ForEach(value => table.Rows.Add(value));
+            //adapter.Fill(table);
+            //DSCN_Grid.DataSource = table;
+            //connection.Close();
 
-            DataTable table = new DataTable();
-            adapter.Fill(table);
-            DSCN_Grid.DataSource = table;
+            // LINQ
+            using var dbContext = new DbmsqlBanHangContext();
 
-            connection.Close();
+            var SQLQuery = from branch in dbContext.Chinhanhs
+                           where branch.Madoitac == madoitac
+                           select branch;
+            DSCN_Grid.DataSource = SQLQuery.ToList();
         }
     }
 }

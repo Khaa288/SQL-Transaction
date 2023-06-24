@@ -14,4 +14,9 @@ public partial class Taikhoan
     public string Mataikhoan { get; set; }
 
     public DateTime NgayTao { get; set; }
+
+    public override string ToString()
+    {
+        return $"Ma Tai Khoan: {Mataikhoan} Mat khau: {Matkhau} Loai: {Loaitaikhoan}";
+    }
 }
