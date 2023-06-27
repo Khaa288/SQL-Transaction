@@ -16,7 +16,7 @@ namespace Project_DBMS.Partner.PartnerControl
     public partial class OrderControl : UserControl
     {
         //String _connectionString = "";
-        String madoitac, currentOrder, currentStatus, loaiTK;
+        String madoitac, currentOrder, currentStatus;
         bool version;
         public OrderControl()
         {

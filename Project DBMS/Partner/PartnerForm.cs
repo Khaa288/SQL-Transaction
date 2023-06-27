@@ -51,10 +51,7 @@ namespace Project_DBMS.Partner
             userControl.BringToFront();
         }
 
-        private void Partner_Load(object sender, EventArgs e)
-        {
-
-        }
+        private void Partner_Load(object sender, EventArgs e){}
 
         private void QL_DonHang_Click(object sender, EventArgs e)
         {
