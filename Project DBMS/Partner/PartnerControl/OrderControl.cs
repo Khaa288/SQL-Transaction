@@ -15,31 +15,26 @@ namespace Project_DBMS.Partner.PartnerControl
 {
     public partial class OrderControl : UserControl
     {
-        String _connectionString = "";
+        //String _connectionString = "";
         String madoitac, currentOrder, currentStatus, loaiTK;
         bool version;
         public OrderControl()
         {
             InitializeComponent();
-
-            _connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
+            //_connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
         }
 
         public OrderControl(string partnerID)
         {
             InitializeComponent();
-
-            _connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
-
+            //_connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
             madoitac = partnerID;
         }
 
         public OrderControl(string partnerID, bool ver)
         {
             InitializeComponent();
-
-            _connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
-
+            //_connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
             madoitac = partnerID;
             version = ver;
         }
@@ -150,15 +145,14 @@ namespace Project_DBMS.Partner.PartnerControl
             else if (version == false && LostUp_Radio.Checked)
                 procsName = "sp_CapNhatDonLostUpdate";
 
-            MessageBox.Show(procsName);
-            String currentStatus = "";
+            //MessageBox.Show(procsName);
             
             if(ChoNhan_Radio.Checked)
                 currentStatus = ChoNhan_Radio.Text;
             else if(DangCB_Radio.Checked)
                 currentStatus = DangCB_Radio.Text;
 
-            MessageBox.Show(currentStatus + currentOrder);
+            //MessageBox.Show(currentStatus + currentOrder);
             var result = dbcontext.Database.ExecuteSqlRaw($"{procsName} @orderId, @orderStatus",
                 new SqlParameter("@orderId", currentOrder),
                 new SqlParameter("@orderStatus", currentStatus)
@@ -174,10 +168,20 @@ namespace Project_DBMS.Partner.PartnerControl
 
         private void DSDHGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            ChoNhan_Radio.Checked = false;
+            DangCB_Radio.Checked = false;
+
             DataGridViewRow row = DSDHGrid.Rows[e.RowIndex];
             currentOrder = (String)row.Cells["MADONHANG"].Value;
-            //currentStatus = (String)row.Cells["TINHTRANG"].Value;
+            currentStatus = (String)row.Cells["TINHTRANG"].Value;
+            currentStatus = currentStatus.ToLower();
+
             Console.OutputEncoding = Encoding.Unicode;
+            if (currentStatus == "chờ nhận")
+                ChoNhan_Radio.Checked = true;
+            else
+                DangCB_Radio.Checked = true;
+
             update_gb.Text = "Đơn hàng " + currentOrder;
         }
     }
