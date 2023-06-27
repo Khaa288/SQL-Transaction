@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using Project_DBMS.Models;
+using SQLHelper;
 
 namespace Project_DBMS.Shipper
 {
@@ -26,9 +28,7 @@ namespace Project_DBMS.Shipper
         {
             InitializeComponent();
             mataixe = shipperID;
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
-
+            //connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
             TaiXe_Label.Text = shipperID;
         }
 
@@ -36,80 +36,98 @@ namespace Project_DBMS.Shipper
         {
             InitializeComponent();
             mataixe = shipperID;
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
-
+            //connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
             TaiXe_Label.Text = shipperID;
             version = ver;
         }
 
         private void btnViewOrder_Click(object sender, EventArgs e)
         {
-            SqlConnection connection = new SqlConnection(connectionString);
-            connection.Open();
+            // SqlConnection connection = new SqlConnection(connectionString);
+            // connection.Open();
 
-            String sqlQuery = String.Format("SELECT * FROM DONHANG WHERE TAIXEXULI = '{0}'", mataixe);
-            SqlDataAdapter adapter = new SqlDataAdapter(sqlQuery, connection);
-            DataTable table = new DataTable();
-            adapter.Fill(table);
-            DSDH_Grid.DataSource = table;
+            // String sqlQuery = String.Format("SELECT * FROM DONHANG WHERE TAIXEXULI = '{0}'", mataixe);
+            // SqlDataAdapter adapter = new SqlDataAdapter(sqlQuery, connection);
+            // DataTable table = new DataTable();
+            // adapter.Fill(table);
+            // DSDH_Grid.DataSource = table;
 
-            connection.Close();
+            // connection.Close();
+
+            // LINQ Update
+            using var dbcontext = new DbmsqlBanHangContext();
+            DSDH_Grid.DataSource = dbcontext.ShipperOrders(mataixe);
         }
 
         private void btn_Update_Click(object sender, EventArgs e)
         {
-            SqlConnection connection = new SqlConnection(connectionString);
-            connection.Open();
+            // SqlConnection connection = new SqlConnection(connectionString);
+            // connection.Open();
+            // String procname = "";
+            // if (version == true)
+            // {
+            //     procname = "sp_CapNhatDonDirtyFix";
+            // }
+
+            // else if (version == false)
+            // {
+            //     procname = "sp_CapNhatDonDirty";
+            // }
+
+            // SqlCommand command = new SqlCommand(procname);
+            // command.CommandType = CommandType.StoredProcedure;
+            // command.Connection = connection;
+
+            // // truyen tham so madonhang vao proc truoc
+            // command.Parameters.Add("@MADONHANG", SqlDbType.VarChar);
+            // command.Parameters.Add("@TINHTRANG", SqlDbType.NVarChar);
+
+            // command.Parameters["@MADONHANG"].Value = currentOrder;
+
+            // // tuy chon tinh trang vao truyen vao proc
+            // if (VChuyen_Radio.Checked)
+            // {
+            //     command.Parameters["@TINHTRANG"].Value = VChuyen_Radio.Text;
+            // }
+
+            // else if (HoanTat_Radio.Checked)
+            // {
+            //     command.Parameters["@TINHTRANG"].Value = HoanTat_Radio.Text;
+            // }
+
+            // else
+            // {
+            //     command.Parameters["@TINHTRANG"].Value = currentStatus;
+            // }
+
+            // int n = command.ExecuteNonQuery();
+            // if (n > 0)
+            // {
+            //     Console.OutputEncoding = Encoding.Unicode;
+            //     MessageBox.Show("Cập nhật thành công!!!");
+            // }
+            // else
+            // {
+            //     MessageBox.Show("Update Failed!!!!");
+            // }
+
+            // connection.Close();
+
+            // LINQ Update
+            using var dbcontext = new DbmsqlBanHangContext();
             String procname = "";
             if (version == true)
-            {
                 procname = "sp_CapNhatDonDirtyFix";
-            }
-
             else if (version == false)
-            {
                 procname = "sp_CapNhatDonDirty";
-            }
-
-            SqlCommand command = new SqlCommand(procname);
-            command.CommandType = CommandType.StoredProcedure;
-            command.Connection = connection;
-
-            // truyen tham so madonhang vao proc truoc
-            command.Parameters.Add("@MADONHANG", SqlDbType.VarChar);
-            command.Parameters.Add("@TINHTRANG", SqlDbType.NVarChar);
-
-            command.Parameters["@MADONHANG"].Value = currentOrder;
 
             // tuy chon tinh trang vao truyen vao proc
             if (VChuyen_Radio.Checked)
-            {
-                command.Parameters["@TINHTRANG"].Value = VChuyen_Radio.Text;
-            }
-
+                currentStatus = VChuyen_Radio.Text;
             else if (HoanTat_Radio.Checked)
-            {
-                command.Parameters["@TINHTRANG"].Value = HoanTat_Radio.Text;
-            }
+                currentStatus = HoanTat_Radio.Text;
 
-            else
-            {
-                command.Parameters["@TINHTRANG"].Value = currentStatus;
-            }
-
-            int n = command.ExecuteNonQuery();
-            if (n > 0)
-            {
-                Console.OutputEncoding = Encoding.Unicode;
-                MessageBox.Show("Cập nhật thành công!!!");
-            }
-            else
-            {
-                MessageBox.Show("Update Failed!!!!");
-            }
-
-            connection.Close();
+            dbcontext.OrderStatusUpdated(procname, currentOrder, currentStatus);
         }
 
         private void DSDH_Grid_CellClick(object sender, DataGridViewCellEventArgs e)
