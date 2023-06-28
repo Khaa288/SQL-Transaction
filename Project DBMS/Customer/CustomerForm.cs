@@ -8,13 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using Project_DBMS.Models;
+using SQLHelper;
 
 namespace Project_DBMS.Customer
 {
     public partial class CustomerForm : Form
     {
         String makhachhang;
-        String connectionString;
+        //String connectionString;
         String currentOrder, currentBranch;
         bool version;
 
@@ -26,23 +28,17 @@ namespace Project_DBMS.Customer
         public CustomerForm(string CustomerID)
         {
             InitializeComponent();
-
             customerID_Label.Text = CustomerID;
-
             makhachhang = CustomerID;
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
+            //connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
         }
 
         public CustomerForm(string CustomerID, bool ver)
         {
             InitializeComponent();
-
             customerID_Label.Text = CustomerID;
-
             makhachhang = CustomerID;
-
-            connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
+            //connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["connection_string"].ConnectionString;
             version = ver;
         }
 
@@ -60,36 +56,45 @@ namespace Project_DBMS.Customer
             //connection.Close();
 
             // DIRTY READ 
-            SqlConnection connection = new SqlConnection(connectionString);
-            connection.Open();
+            // SqlConnection connection = new SqlConnection(connectionString);
+            // connection.Open();
+
+            // String procname = "";
+            // if (version == true)
+            // {
+            //     procname = "sp_XemDonDirtyFix";
+            // }
+
+            // else if (version == false)
+            // {
+            //     procname = "sp_XemDonDirty";
+            // }
+
+            // SqlCommand command = new SqlCommand(procname);
+            // command.CommandType = CommandType.StoredProcedure;
+            // command.Connection = connection;
+
+            // command.Parameters.Add("@MAKHACHHANG", SqlDbType.VarChar);
+            // command.Parameters["@MAKHACHHANG"].Value = makhachhang;
+
+            // SqlDataReader reader = command.ExecuteReader();
+
+            // DataTable table = new DataTable();
+            // table.Load(reader);
+
+            // DHKH_Grid.AutoGenerateColumns = false;
+            // DHKH_Grid.DataSource = table;
+
+            // connection.Close();
 
             String procname = "";
             if (version == true)
-            {
                 procname = "sp_XemDonDirtyFix";
-            }
-
             else if (version == false)
-            {
                 procname = "sp_XemDonDirty";
-            }
 
-            SqlCommand command = new SqlCommand(procname);
-            command.CommandType = CommandType.StoredProcedure;
-            command.Connection = connection;
-
-            command.Parameters.Add("@MAKHACHHANG", SqlDbType.VarChar);
-            command.Parameters["@MAKHACHHANG"].Value = makhachhang;
-
-            SqlDataReader reader = command.ExecuteReader();
-
-            DataTable table = new DataTable();
-            table.Load(reader);
-
-            DHKH_Grid.AutoGenerateColumns = false;
-            DHKH_Grid.DataSource = table;
-
-            connection.Close();
+            using var dbcontext = new DbmsqlBanHangContext();
+            DHKH_Grid.DataSource = dbcontext.CustomerOrderDirtyRead(procname, makhachhang);
         }
 
         private void dathang_button_Click(object sender, EventArgs e)
@@ -100,38 +105,52 @@ namespace Project_DBMS.Customer
 
         private void Huydon_Button_Click(object sender, EventArgs e)
         {
-            SqlConnection connection = new SqlConnection(connectionString);
-            connection.Open();
+            // SqlConnection connection = new SqlConnection(connectionString);
+            // connection.Open();
+
+            // String procname = "";
+            // if (version == true)
+            // {
+            //     procname = "sp_HuyDonLostUpdateFix";
+            // }
+
+            // else if (version == false)
+            // {
+            //     procname = "sp_HuyDonLostUpdate";
+            // }
+
+            // SqlCommand command = new SqlCommand(procname);
+            // command.CommandType = CommandType.StoredProcedure;
+            // command.Connection = connection;
+
+            // command.Parameters.Add("@MADONHANG", SqlDbType.VarChar);
+            // command.Parameters["@MADONHANG"].Value = currentOrder;
+
+            // int n = command.ExecuteNonQuery();
+            // if (n > 0)
+            // {
+            //     Console.OutputEncoding = Encoding.Unicode;
+            //     MessageBox.Show("Hủy thành công!!!");
+            // }
+            // else
+            // {
+            //     MessageBox.Show("Update Failed!!!!");
+            // }
+            // connection.Close();
 
             String procname = "";
             if (version == true)
-            {
                 procname = "sp_HuyDonLostUpdateFix";
-            }
-
             else if (version == false)
-            {
                 procname = "sp_HuyDonLostUpdate";
-            }
 
-            SqlCommand command = new SqlCommand(procname);
-            command.CommandType = CommandType.StoredProcedure;
-            command.Connection = connection;
-
-            command.Parameters.Add("@MADONHANG", SqlDbType.VarChar);
-            command.Parameters["@MADONHANG"].Value = currentOrder;
-
-            int n = command.ExecuteNonQuery();
-            if (n > 0)
-            {
-                Console.OutputEncoding = Encoding.Unicode;
-                MessageBox.Show("Hủy thành công!!!");
-            }
-            else
-            {
-                MessageBox.Show("Update Failed!!!!");
-            }
-            connection.Close();
+            using var dbcontext = new DbmsqlBanHangContext();
+            bool isUpdated = dbcontext.CustomerCancelOrder(procname, currentOrder);
+            
+            if(isUpdated)
+                MessageBox.Show("Order deleted!!!");
+            else 
+                MessageBox.Show("Cannot delete this order!!!");
         }
 
         private void DHKH_Grid_CellClick(object sender, DataGridViewCellEventArgs e)
