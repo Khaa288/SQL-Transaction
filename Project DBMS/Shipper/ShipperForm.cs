@@ -15,7 +15,7 @@ namespace Project_DBMS.Shipper
 {
     public partial class ShipperForm : Form
     {
-        String connectionString;
+        //String connectionString;
         String mataixe, currentOrder, currentStatus;
         bool version;
 
