@@ -34,4 +34,26 @@ namespace SQLHelper {
             ) > 0 ? true : false;
         }
     }
+
+    static class Customre_Helper {
+        public static List<Donhang> CustomerOrders(this DbmsqlBanHangContext dbcontext, String custId) {
+            return dbcontext.Donhangs.Where(value => value.Khachhang == custId).Select(order => order).ToList();
+        }
+
+        public static List<Donhang> CustomerOrderDirtyRead(this DbmsqlBanHangContext dbcontext, String procname, String custId) {
+            return dbcontext.Donhangs.FromSqlRaw($"{procname} @MAKHACHHANG",
+                new SqlParameter("@MAKHACHHANG", custId)
+            ).ToList();   
+        }
+
+        public static bool CustomerCancelOrder(this DbmsqlBanHangContext dbcontext, String procname, String orderId) {
+            return dbcontext.Database.ExecuteSqlRaw($"{procname} @MADONHANG",
+                new SqlParameter("@MADONHANG", orderId)
+            ) > 0 ? true : false;
+        }
+
+        // public static List<Monan> AllDishes(this DbmsqlBanHangContext dbcontext) {
+            
+        // }
+    }
 }
