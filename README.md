@@ -1,17 +1,16 @@
-# Hệ thống đặt thức ăn nhanh:
-
-## Gồm giao diện của 4 phân hệ:
-- Đối tác: form quản lý chi nhánh, quản lý thực đơn, quản lý đơn hàng, quản lý hợp đồng.
-- Nhân viên: form xử lý hợp đồng.
-- Khách hàng: form danh sách món ăn, form danh sách chi nhánh, form đặt hàng.
-- Tài xế: form xử lý đơn đặt hàng.
-
-## Các tình huống tranh chấp và sửa lỗi:
-- Dirty Read: Khách hàng xem danh sách đơn hàng cùng lúc khi đối tác cập nhật tình trạng đơn 
-- Lost update: Khách hàng đặt hàng cùng lúc khi đối tác cập nhật tình trạng đơn hàng
-- Unrepeatable read: Đối tác xem danh sách hợp đồng cùng lúc khi nhân viên gia hạn hợp đồng
-- Phantom: Khách hàng xem danh sách thực đơn cùng lúc khi đối tác cập nhật thực đơn của quán
+# Fast Food Ordering System:
+## Comprising the interfaces of 4 subsystems:
+- Partner: branch management form, menu management form, order management form, contract management form.
+- Employee: contract processing form.
+- Customer: food item list form, branch list form, order form.
+- Driver: order processing form.
+  
+## Conflict situations and error handling:
+Dirty Read: Customers view the list of orders simultaneously when the partner updates the order status.
+Lost update: Customers place orders simultaneously when the partner updates the order status.
+Unrepeatable read: Partner views the list of contracts simultaneously when an employee extends a contract.
+Phantom: Customers view the menu list simultaneously when the partner updates the restaurant's menu.
 
 ## Prerequisites:
-- Run 2 file **Database.sql** và **ProcedureList.sql**
-- Chỉnh sửa ```connectionString``` trong **App.config** bằng *Server ID hiện tại*
+Run 2 files Database.sql and ProcedureList.sql.
+Edit the connectionString in App.config with the current Server ID.
